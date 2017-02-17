@@ -9,18 +9,23 @@ var Message = require('azure-iot-device').Message;
 var AzureConnectionString = '';
 var client = Client.fromConnectionString(AzureConnectionString, Protocol);
 
+var sp = new serialport("/dev/ttyACM0", { parser: serialport.parsers.readline("\n") });
+
 client.open(function (err, result) {
     if (err) {
         printErrorFor('open')(err);
     } else {
+        //console.log(result);
         //READING MESSAGES FROM MASTER
         client.on('message', function (msg) {
             console.log('receive data: ' + msg.getData());
-            var message = "" + msg.getData() + ""
+            var message = JSON.parse(""+msg.getData()+"");
+            sp.write("music:"+message.music);
+            sp.write("light:"+message.light);
             //TODO message reçut d'IOTHub
-            if (message.indexOf('XXXXXXX' != -1)) {
+            //if (message.indexOf('XXXXXXX' != -1)) {
 
-            }
+            //}
             client.complete(msg, printResultFor('completed'));
         });
         client.on('event', function (msg) {
@@ -35,11 +40,10 @@ client.open(function (err, result) {
 });
 
 
-var sp = new serialport("/dev/ttyACM0", { parser: serialport.parsers.readline("\n") });
-sp.on("data", function (data) {
+/*sp.on("data", function (data) {
     //Todo logique data
     client.sendEvent(new Message(data), printErrorFor('send event'));
-});
+});*/
 
 
 
