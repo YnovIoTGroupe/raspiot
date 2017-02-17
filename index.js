@@ -38,7 +38,22 @@ client.open(function (err, result) {
 var sp = new serialport("/dev/ttyACM0", { parser: serialport.parsers.readline("\n") });
 sp.on("data", function (data) {
     //Todo logique data
-    //client.send();
+    client.sendEvent(new Message(data), printErrorFor('send event'));
 });
 
+
+
+// Helper function to print results for an operation
+function printErrorFor(op) {
+    return function printError(err) {
+        if (err) console.log(op + ' error: ' + err.toString());
+    };
+}
+// Helper function to print results in the console
+function printResultFor(op) {
+  return function printResult(err, res) {
+    if (err) console.log(op + ' error: ' + err.toString());
+    if (res) console.log(op + ' status: ' + res.constructor.name);
+  };
+}
 
